@@ -2,10 +2,12 @@
 
 package duoc.eft_s9_saul_gatica;
 
+// Importación de clases para trabajar con fechas y estructuras de datos
 import java.time.LocalDateTime;
 import java.util.*;
 
-class Entrada {
+// Clase que estructura una entrada y/o reserva en el teatro
+class Entrada {   
     static int contador = 1;
     int id;
     String cliente;
@@ -20,9 +22,10 @@ class Entrada {
     LocalDateTime fechaDeReserva;
     boolean caducada;
 
+     //Constructor de class Entrada
     public Entrada(String cliente, int edad, String funcion, int cantidad, int[] asientos, String[] sexos,
                    boolean pagado, double precio, double descuentoTotal) {
-        this.id = contador++;
+        this.id = contador++; // Asigna ID único y aumenta el contador
         this.cliente = cliente;
         this.edad = edad;
         this.funcion = funcion;
@@ -35,7 +38,7 @@ class Entrada {
         this.fechaDeReserva = LocalDateTime.now();
         this.caducada = false;
     }
-
+    // La reserva ha expirado, si pasa más de 1 hora sin pagar)
     public boolean esReservaExpirada() {
         return !pagado && !caducada && fechaDeReserva.plusHours(1).isBefore(LocalDateTime.now());
     }
@@ -48,6 +51,7 @@ class Entrada {
         return "Galería";
     }
 
+    // Imprime el detalle de la boleta en pantalla
     public void imprimirBoleta() {
         System.out.println("----- BOLETA -----");
         System.out.println("ID: " + id);
@@ -66,10 +70,10 @@ class Entrada {
         System.out.println("------------------");
     }
 }
-
+// Clase que representa el sistema del teatro y su lógica 
 class SistemaTeatro {
     Scanner scanner = new Scanner(System.in);
-    List<Entrada> entradas = new ArrayList<>();
+    List<Entrada> entradas = new ArrayList<>();  // Lista de todas las entradas
     static double ingresosTotales = 0.0;
     static int[] estadoDeAsientos = new int[50]; // 50 asientos
 
@@ -79,7 +83,7 @@ class SistemaTeatro {
         String input = scanner.nextLine();
         String[] asientosStr = input.split(" ");
 
-        Set<Integer> setAsientos = new HashSet<>();
+        Set<Integer> setAsientos = new HashSet<>(); //HashSet para almacenar los números de asiento que el usuario selecciona en esta operación
 
         for (int i = 0; i < cantidad; i++) {
             try {
@@ -164,16 +168,17 @@ class SistemaTeatro {
         }
 
         double descuentoTotal = precioSinDescuento - precioTotal;
+        // Crea la entrada como "reservada"
         Entrada entrada = new Entrada(cliente, edades[0], funcion, cantidad, asientosSeleccionados, sexos, false, precioTotal, descuentoTotal);
 
         for (int asiento : asientosSeleccionados) {
-            estadoDeAsientos[asiento - 1] = 1;
+            estadoDeAsientos[asiento - 1] = 1;  // ASiento marcado como reservado
         }
 
         entradas.add(entrada);
         System.out.println("Reserva realizada. ID: " + entrada.id);
     }
-
+     // comprar entradas (pagadas)
     public void comprarEntrada() {
         actualizarReservasExpiradas();
         System.out.print("Nombre del cliente: ");
@@ -203,7 +208,7 @@ class SistemaTeatro {
                 edades[i] = Integer.parseInt(edadesStr[i]);
             }
         } catch (NumberFormatException e) {
-            System.out.println("Error en edades.");
+            System.out.println("Error en edades.");  // Por si ingresan texto en vez de números
             return;
         }
 
@@ -245,7 +250,6 @@ class SistemaTeatro {
         }
         System.out.println("No se encontró esa entrada.");
     }
-
     private double obtenerPrecioBase(int asiento) {
         if (asiento >= 1 && asiento <= 10) return 25000;       // VIP
         if (asiento >= 11 && asiento <= 20) return 12000;      // Palco
@@ -253,7 +257,7 @@ class SistemaTeatro {
         if (asiento >= 31 && asiento <= 40) return 20000;      // Platea Alta
         return 8000;                                           // Galería (41-50)
     }
-
+// precio individual aplicando descuentos según edad y sexo
     private double calcularPrecioIndividual(int asiento, int edad, String sexo) {
         double base = obtenerPrecioBase(asiento);
         if (edad > 65) return base * 0.75;      // Adulto mayor (25%)
@@ -262,12 +266,12 @@ class SistemaTeatro {
         if (edad < 5) return base * 0.90;       // Niño menor de 5 años (10%)
         return base;
     }
-
+    // Muestra en pantalla los ingresos acumulados por compras
     public static void mostrarIngresosTotales() {
         System.out.println("Ingresos totales: $" + ingresosTotales);
     }
 }
-
+// Clase principal que ejecuta el programa
 public class EFT_S9_Saul_Gatica {
     public static void main(String[] args) {
         SistemaTeatro sistema = new SistemaTeatro();
@@ -292,6 +296,6 @@ public class EFT_S9_Saul_Gatica {
                 case 0 -> System.out.println("Gracias por usar el sistema de venta de entradas de Teatro Moro");
                 default -> System.out.println("Opción no válida.");
             }
-        } while (opcion != 0);
+        } while (opcion != 0);   // Este bucle se repite hasta que el usuario elija opcion 0
     }
 }
